@@ -34,9 +34,9 @@ jobs:
             combinations+=${B_COMBINATION}
           fi
 
-          echo 'test-matrix<<EOF' >> $GITHUB_OUTPUT
-          echo '[${combinations}]' >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          echo "test-matrix<<EOF" >> $GITHUB_OUTPUT
+          echo "[${combinations}]" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
   test-echo:
     needs: gen-matrix
     runs-on: ubuntu-latest
