@@ -1,0 +1,58 @@
+name: test dynamic matrix
+on:
+  workflow_dispatch:
+    inputs:
+      test_a:
+        type: boolean
+        description: Test against a
+        default: true
+      test_b:
+        type: boolean
+        description: Test against b
+        default: false
+jobs:
+  gen-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      test-matrix: ${{ steps.set-matrix.outputs.test-matrix }}
+    steps:
+      - name: generate test stages list for matrix
+        id: set-matrix
+        run: |
+          A_COMBINATION='
+            {"key": "a", "bar": "bbb"},
+          '
+          B_COMBINATION='
+            {"key": "b", "bar": "bbb"},
+            {"key": "b", "bar": "ccc"},
+          '
+
+          if [[ "${{ inputs.test_a }}" = true ]]; then
+            combinations+=${A_COMBINATION}
+          fi
+          if [[ "${{ inputs.test_b }}" = true ]]; then
+            combinations+=${B_COMBINATION}
+          fi
+
+          echo 'test-matrix<<EOF' >> $GITHUB_OUTPUT
+          echo '[${combinations}]' >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+  test-echo:
+    needs: gen-matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: echo ${{ needs.gen-matrix.outputs.test-matrix }}
+  test-matrix:
+    needs: gen-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        env: ${{ fromJson(needs.gen-matrix.outputs.test-matrix) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: echo
+        run: |
+          echo ${{matrix.env.key}}
+          echo ${{matrix.env.bar}}
