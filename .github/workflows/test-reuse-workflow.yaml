@@ -1,0 +1,16 @@
+name: test_input_required
+on:
+  workflow_call:
+    inputs:
+      test:
+        required: true
+        type: string
+        default: "hi"
+
+jobs:
+  test-input:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo inputs
+        run: |
+          echo ${{ inputs.test }}

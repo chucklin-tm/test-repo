@@ -1,0 +1,9 @@
+name: test_input_required
+on:
+  push:
+    branches:
+      - experimental/test-reuse-input
+
+jobs:
+  test-input:
+    uses: ./.github/workflows/test-reuse-workflow.yaml
