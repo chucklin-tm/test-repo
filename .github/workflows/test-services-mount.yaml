@@ -1,0 +1,25 @@
+name: test service mount
+on:
+  push:
+    branches:
+      - experimental/test-services-mount
+jobs:
+  test-services-mount:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.7
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5 --name postgres
+        volumes:
+          - ${{ github.workspace }}/README.md:/tmp/README.md
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get the README.md
+        run: docker exec postgres cat /tmp/README.md
