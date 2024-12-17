@@ -17,11 +17,11 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5 --name postgres
         volumes:
-          - ${{ github.workspace }}/README.md:/tmp/README.md
+          - ${{ github.workspace }}:/tmp/workspace
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Restart the postgres service
         run: docker restart postgres
       - name: Get the README.md
-        run: docker exec postgres cat /tmp/README.md
+        run: docker exec postgres cat /tmp/workspace/README.md
