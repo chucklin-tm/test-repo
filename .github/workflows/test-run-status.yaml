@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: run
         run: |
-          exit 1
+          echo "Hello, world!"
       - name: Get Previous Run Status
         id: get_previous_status
         uses: actions/github-script@v4
