@@ -45,6 +45,8 @@ jobs:
               }
             }
 
+            console.log(runs.jobs);
+            console.log(status);
             return status
 
       - name: Get Previous Run Status
