@@ -35,18 +35,12 @@ jobs:
             });
 
             let status = 'success';
-            for (const job of runs.jobs) {
-              if (job.conclusion === 'cancelled') {
-                status = 'cancelled';
-                break;
-              } else if (job.conclusion === 'failure') {
-                status = 'failure';
-                break;
-              }
+            if (runs.jobs.some(job => job.conclusion === 'cancelled')) {
+              status = 'cancelled';
+            } else if (runs.jobs.some(job => job.conclusion === 'failure')) {
+              status = 'failure';
             }
 
-            console.log(runs.jobs);
-            console.log(status);
             return status
 
       - name: Get Previous Run Status
@@ -68,7 +62,6 @@ jobs:
               page: 1,
             });
 
-            console.log(runs.workflow_runs);
             return runs.workflow_runs[1].conclusion;
 
       - name: Check Status Change
