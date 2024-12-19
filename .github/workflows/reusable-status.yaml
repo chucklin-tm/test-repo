@@ -1,0 +1,65 @@
+name: test build status change
+on:
+  workflow_call:
+
+permissions:
+  actions: read
+
+jobs:
+  run:
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Current Run Status
+        id: current_status
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: runs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+              per_page: 100,
+              page: 1,
+            });
+
+            let status = 'success';
+            if (runs.jobs.some(job => job.conclusion === 'cancelled')) {
+              status = 'cancelled';
+            } else if (runs.jobs.some(job => job.conclusion === 'failure')) {
+              status = 'failure';
+            }
+
+            return status
+
+      - name: Get Previous Run Status
+        id: previous_status
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path');
+            let workflow_ref = process.env.GITHUB_WORKFLOW_REF;
+            const workflow_id = path.basename(workflow_ref.split('@')[0]);
+
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflow_id,
+              per_page: 2,
+              page: 1,
+            });
+
+            return runs.workflow_runs[1].conclusion;
+
+      - name: Check Status Change
+        id: check_status_change
+        run: echo "Build back to normal."
+        if: ${{ steps.previous_status.outputs.result != 'success' && steps.current_status.outputs.result == 'success' }}
+
+      - name: Echo fail
+        run: echo "Build failed."
+        if: ${{ steps.current_status.outputs.result == 'failure' }}
