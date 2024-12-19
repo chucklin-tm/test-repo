@@ -50,6 +50,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: workflow_id,
+              branch: context.ref,
               per_page: 2,
               page: 1,
             });
