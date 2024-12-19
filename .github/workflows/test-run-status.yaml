@@ -32,7 +32,7 @@ jobs:
               per_page: 2,
               page: 1,
             });
-            return runs.workflow_runs[1].status;
+            return runs.workflow_runs[1].conclusion;
 
       - name: Check Status Change
         id: check_status_change
