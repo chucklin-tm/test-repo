@@ -13,16 +13,9 @@ jobs:
     steps:
       - name: success
         run: exit 0
-  second_job:
-    needs:
-      - fail_success
-    runs-on: ubuntu-latest
-    steps:
-      - name: success
-        run: exit 0
   status:
     needs:
-      - second_job
+      - fail_success
     if: ${{ !cancelled() }}
     uses: ./.github/workflows/reusable-status.yaml
     secrets: inherit
