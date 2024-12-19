@@ -11,15 +11,15 @@ jobs:
   fail_success:
     runs-on: ubuntu-latest
     steps:
-      - name: fail
-        run: exit 1
+      - name: success
+        run: exit 0
   second_job:
     needs:
       - fail_success
     runs-on: ubuntu-latest
     steps:
-      - name: success
-        run: echo "success"
+      - name: fail
+        run: exit 1
   status:
     needs:
       - second_job
