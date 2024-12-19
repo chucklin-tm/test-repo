@@ -1,8 +1,13 @@
-name: test dynamic matrix
+name: test build status change
 on:
   push:
     branches:
       - experimental/run_status
+
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -24,6 +29,7 @@ jobs:
               page: 1,
             });
             return runs[1].status;
+
       - name: Check Status Change
         id: check_status_change
         run: echo "Build back to normal"
