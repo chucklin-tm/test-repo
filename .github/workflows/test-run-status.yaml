@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - experimental/run_status
+      - test/branch2
 
 permissions:
   actions: read
