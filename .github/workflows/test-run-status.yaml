@@ -11,8 +11,6 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - name: force fail
-        run: exit 1
       - name: Get Previous Run Status
         id: previous_status
         uses: actions/github-script@v7
