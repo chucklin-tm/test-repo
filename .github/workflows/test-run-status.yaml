@@ -1,0 +1,34 @@
+name: test dynamic matrix
+on:
+  push:
+    branches:
+      - experimental/run_status
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run
+        run: |
+          exit 1
+      - name: Get Previous Run Status
+        id: get_previous_status
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: runs } = await github.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: context.workflow,
+              per_page: 2,
+              page: 1,
+            });
+            return runs[1].status;
+      - name: Check Status Change
+        id: check_status_change
+        run: echo "Build back to normal"
+        if: ${{ steps.get_previous_status.outputs.result != success() }}
+
+      - name: Echo fail
+        run: echo "Build failed"
+        if: ${{ failure() && !cancelled() }}
