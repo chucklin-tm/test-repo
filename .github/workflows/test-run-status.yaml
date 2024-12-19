@@ -11,8 +11,8 @@ jobs:
   fail_success:
     runs-on: ubuntu-latest
     steps:
-      - name: fail
-        run: exit 1
+      - name: success
+        run: exit 0
   run:
     needs:
       - fail_success
