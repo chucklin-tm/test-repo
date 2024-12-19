@@ -8,6 +8,11 @@ permissions:
   actions: read
 
 jobs:
+  fail_success:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail
+        run: exit 1
   run:
     runs-on: ubuntu-latest
     steps:
@@ -38,4 +43,4 @@ jobs:
 
       - name: Echo fail
         run: echo "Build failed."
-        if: ${{ failure() && !cancelled() }}
+        if: ${{ failure() }}
