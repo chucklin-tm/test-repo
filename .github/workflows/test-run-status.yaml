@@ -21,14 +21,18 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const path = require('path');
+            let workflow_ref = process.env.GITHUB_WORKFLOW_REF;
+            const workflow_id = path.basename(workflow_ref.split('@')[0]);
+
             const { data: runs } = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: context.runId,
+              workflow_id: workflow_id,
               per_page: 2,
               page: 1,
             });
-            return runs[1].status;
+            return runs.workflow_runs[1].status;
 
       - name: Check Status Change
         id: check_status_change
