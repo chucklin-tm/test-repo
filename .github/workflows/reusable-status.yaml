@@ -50,7 +50,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: workflow_id,
-              branch: context.ref,
+              branch: ${{ github.head_ref || github.ref_name }},
               per_page: 2,
               page: 1,
             });
