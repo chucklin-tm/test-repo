@@ -42,22 +42,43 @@ jobs:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const path = require('path');
-            let workflow_ref = process.env.GITHUB_WORKFLOW_REF;
-            const workflow_id = path.basename(workflow_ref.split('@')[0]);
+            if context.runAttempt > 1 {
+              const { data: runs } = await github.rest.actions.listJobsForWorkflowRunAttempt({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+                run_attempt: context.runAttempt - 1,
+                per_page: 100,
+                page: 1,
+              });
 
-            const { data: runs } = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: workflow_id,
-              branch: '${{ github.head_ref || github.ref_name }}',
-              per_page: 2,
-              page: 1,
-            });
+              let status = 'success';
+              if (runs.jobs.some(job => job.conclusion === 'cancelled')) {
+                status = 'cancelled';
+              } else if (runs.jobs.some(job => job.conclusion === 'failure')) {
+                status = 'failure';
+              }
 
-            console.log(runs.workflow_runs);
-            console.log(runs.workflow_runs[1].conclusion);
-            return runs.workflow_runs[1].conclusion;
+              console.log(status);
+              return status
+            } else {
+              const path = require('path');
+              let workflow_ref = process.env.GITHUB_WORKFLOW_REF;
+              const workflow_id = path.basename(workflow_ref.split('@')[0]);
+
+              const { data: runs } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflow_id,
+                branch: '${{ github.head_ref || github.ref_name }}',
+                per_page: 2,
+                page: 1,
+              });
+
+              console.log(runs.workflow_runs);
+              console.log(runs.workflow_runs[1].conclusion);
+              return runs.workflow_runs[1].conclusion;
+            }
 
       - name: Check Status Change
         id: check_status_change
