@@ -42,12 +42,13 @@ jobs:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            if (parseInt(${{ github.run_attempt }}) > 1) {
+            let run_attempt = parseInt(${{ github.run_attempt }});
+            if (run_attempt > 1) {
               const { data: runs } = await github.rest.actions.listJobsForWorkflowRunAttempt({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: context.runId,
-                run_attempt: context.runAttempt - 1,
+                run_attempt: run_attempt - 1,
                 per_page: 100,
                 page: 1,
               });
