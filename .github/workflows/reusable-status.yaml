@@ -43,6 +43,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             console.log(context.runAttempt);
+            console.log(process.env.GITHUB_RUN_ATTEMPT);
+            console.log(${{ github.run_attempt }});
+            console.log(${{ env.GITHUB_RUN_ATTEMPT }});
             if (context.runAttempt > 1) {
               const { data: runs } = await github.rest.actions.listJobsForWorkflowRunAttempt({
                 owner: context.repo.owner,
