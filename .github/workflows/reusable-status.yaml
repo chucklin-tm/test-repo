@@ -33,7 +33,7 @@ jobs:
             }
 
             console.log(status);
-            return status
+            return status;
 
       - name: Get Previous Run Status
         id: previous_status
@@ -42,6 +42,7 @@ jobs:
           result-encoding: string
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            console.log(context.runAttempt);
             if (context.runAttempt > 1) {
               const { data: runs } = await github.rest.actions.listJobsForWorkflowRunAttempt({
                 owner: context.repo.owner,
@@ -60,7 +61,7 @@ jobs:
               }
 
               console.log(status);
-              return status
+              return status;
             } else {
               const path = require('path');
               let workflow_ref = process.env.GITHUB_WORKFLOW_REF;
