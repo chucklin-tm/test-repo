@@ -2,6 +2,10 @@ name: test concurrency group
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   gen-matrix:
     runs-on: ubuntu-latest
@@ -33,9 +37,6 @@ jobs:
         env: ${{ fromJson(needs.gen-matrix.outputs.test-matrix) }}
     runs-on: ubuntu-latest
     environment: ${{ matrix.env.key }}
-    concurrency:
-      group: ${{ matrix.env.key }}-${{ matrix.env.bar }}
-      cancel-in-progress: false
     steps:
       - name: echo
         run: |
