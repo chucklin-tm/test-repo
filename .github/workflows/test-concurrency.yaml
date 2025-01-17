@@ -34,7 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ matrix.env.key }}
     concurrency:
-      group: ${{ matrix.env.key }}
+      group: ${{ matrix.env.key }}-${{ matrix.env.bar }}
+      cancel-in-progress: false
     steps:
       - name: echo
         run: |
