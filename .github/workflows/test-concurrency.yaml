@@ -1,0 +1,42 @@
+name: test concurrency group
+on:
+  workflow_dispatch:
+
+jobs:
+  gen-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      test-matrix: ${{ steps.set-matrix.outputs.test-matrix }}
+    steps:
+      - name: generate test stages list for matrix
+        id: set-matrix
+        run: |
+          A_COMBINATION='
+            {"key": "a", "bar": "bbb"},
+          '
+          B_COMBINATION='
+            {"key": "b", "bar": "bbb"},
+            {"key": "b", "bar": "ccc"},
+          '
+
+          combinations=${A_COMBINATION}${B_COMBINATION}
+
+          echo "test-matrix<<EOF" >> $GITHUB_OUTPUT
+          echo "[${combinations}]" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  test-matrix:
+    needs: gen-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        env: ${{ fromJson(needs.gen-matrix.outputs.test-matrix) }}
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.env.key }}
+    concurrency:
+      group: ${{ matrix.env.key }}
+    steps:
+      - name: echo
+        run: |
+          echo ${{matrix.env.key}}
+          echo ${{matrix.env.bar}}
