@@ -3,14 +3,26 @@ name: test-depends
 on:
   workflow_dispatch:
     inputs:
+      run-first:
+        type: boolean
+        description: Run first job
+        default: false
       run-third:
         type: boolean
         description: Run third job
         default: false
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: |
+          echo "test job"
   first:
     runs-on: ubuntu-latest
+    if: ${{ inputs.run-first }}
+    needs: test
     steps:
       - name: echo
         run: |
