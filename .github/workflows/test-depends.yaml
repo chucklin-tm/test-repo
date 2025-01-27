@@ -1,0 +1,39 @@
+name: test-depends
+
+on:
+  workflow_dispatch:
+    inputs:
+      run-third:
+        type: boolean
+        description: Run third job
+        default: false
+
+jobs:
+  first:
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: |
+          echo "first job"
+  second:
+    runs-on: ubuntu-latest
+    needs: first
+    steps:
+      - name: echo
+        run: |
+          echo "second job"
+  third:
+    runs-on: ubuntu-latest
+    needs: second
+    if: ${{ inputs.run-third }}
+    steps:
+      - name: echo
+        run: |
+          echo "third job"
+  forth:
+    runs-on: ubuntu-latest
+    needs: third
+    steps:
+      - name: echo
+        run: |
+          echo "forth job"
